@@ -1,7 +1,6 @@
 langchain
 langchain-community
-langchain-openai
 chromadb
-openai
-python-dotenv
+pypdf
 streamlit
+ollama
