@@ -1,6 +1,8 @@
-langchain
-langchain-community
-chromadb
+pydantic==1.10.21
+langchain==0.0.340
+langchain-core==0.1.23
+langchain-community==0.0.19
+chromadb==0.4.24
 pypdf
 streamlit
 ollama
