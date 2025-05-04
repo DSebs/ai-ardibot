@@ -35,24 +35,40 @@ ArdyBot permite a los estudiantes consultar fácilmente las normas universitaria
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/ardybot.git
-   cd ardybot
+   git clone https://github.com/DSebs/ai-ardibot.git
+   cd ai-ardibot
+   ```
 
 2. Crea un entorno virtual y actívalo:
    ```bash
-   python -m venv .venv
-   .venv\Scripts\activate   # En Windows
+   python -m venv venv
+   # En Windows
+   venv\Scripts\activate
+   # En Linux/Mac
+   source venv/bin/activate
+   ```
 
 3. Instala las dependencias:
    ```bash
    pip install -r requirements.txt
+   ```
 
 4. Ejecuta el chatbot con interfaz:
    ```bash
    streamlit run chatbot/app.py
+   ```
 
 5. Haz preguntas relacionadas con el reglamento y Ardy te responderá
 
+## 📂 Estructura de directorios
+
+Al ejecutar el chatbot por primera vez, se crearán automáticamente los siguientes directorios:
+
+- `local_data/` - Directorio que contiene datos locales no versionados en git
+  - `chroma_db/` - Base de datos vectorial de ChromaDB
+  - `embedding_cache/` - Caché de embeddings para FastEmbed
+
+Estos directorios contienen archivos grandes que no son adecuados para el control de versiones y se generan automáticamente al ejecutar la aplicación.
 
 ## 👥 Autores
 

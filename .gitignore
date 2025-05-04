@@ -1,2 +1,8 @@
 venv/
 .env
+# Ignore embedding cache and model files
+embedding_cache/
+chroma_db_v2/
+local_data/
+__pycache__/
+*.pyc

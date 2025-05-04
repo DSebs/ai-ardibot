@@ -25,7 +25,11 @@ RESPONSE_CACHE = {}
 # Tamaño máximo de caché para evitar consumo excesivo de memoria
 MAX_CACHE_SIZE = 100
 
-PERSIST_DIR = "chroma_db_v2"
+# Directorios locales que no se trackean en git
+DATA_DIR = "local_data"
+PERSIST_DIR = os.path.join(DATA_DIR, "chroma_db")
+EMBEDDING_CACHE_DIR = os.path.join(DATA_DIR, "embedding_cache")
+
 RETRIEVER_SEARCH_KWARGS = {
     "k": 4  # número de documentos a recuperar
 }
@@ -40,12 +44,16 @@ def ingest(pdf_path: str = "data/reglamento/reglamento-universitario.pdf"):
             logger.error(f"El archivo {pdf_path} no existe")
             return f"Error: El archivo {pdf_path} no existe"
         
+        # Asegurar que los directorios existan
+        os.makedirs(DATA_DIR, exist_ok=True)
+        os.makedirs(EMBEDDING_CACHE_DIR, exist_ok=True)
+        
         chunks = load_and_split_pdf(pdf_path)
         logger.info(f"Documentos divididos: {len(chunks)} chunks")
         
         embedding = FastEmbedEmbeddings(
             model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            cache_dir="./embedding_cache"
+            cache_dir=EMBEDDING_CACHE_DIR
         )
         
         # Asegurar que el directorio de persistencia exista
@@ -69,12 +77,13 @@ def ingest(pdf_path: str = "data/reglamento/reglamento-universitario.pdf"):
 
 def build_chain():
     try:
-        # Asegurar que el directorio de embeddings exista
-        os.makedirs("./embedding_cache", exist_ok=True)
+        # Asegurar que los directorios existan
+        os.makedirs(DATA_DIR, exist_ok=True)
+        os.makedirs(EMBEDDING_CACHE_DIR, exist_ok=True)
         
         embedding = FastEmbedEmbeddings(
             model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            cache_dir="./embedding_cache"
+            cache_dir=EMBEDDING_CACHE_DIR
         )
         
         # Verificar que el directorio de persistencia exista
