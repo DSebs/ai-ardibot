@@ -123,7 +123,7 @@ if not st.session_state.first_question_asked:
             f"""
             <div style="text-align: center; padding: 15px; margin-bottom: 20px;">
                 <img src="data:image/png;base64,{banner_base64}" style="max-width: 100%; height: auto;" alt="ArdyBot Banner">
-                <p style="font-size: 25px;">Tu asistente inteligente del Reglamento Universitario 🏫</p>
+                <p style="font-size: 25px;">Tu asistente inteligente universitario 🏫</p>
             </div>
             """,
             unsafe_allow_html=True
@@ -133,7 +133,7 @@ if not st.session_state.first_question_asked:
             """
             <div style="text-align: center; padding: 15px; margin-bottom: 20px;">
                 <h1>ArdyBot 🐿️</h1>
-                <p>Tu asistente inteligente del Reglamento Universitario 🏫</p>
+                <p>Tu asistente inteligente universitario 🏫</p>
             </div>
             """,
             unsafe_allow_html=True
@@ -145,7 +145,7 @@ else:
             f"""
             <div style="text-align: center; padding: 10px; margin-bottom: 15px;">
                 <img src="data:image/png;base64,{banner_base64}" style="max-width: 250px; height: auto;" alt="ArdyBot Banner">
-                <p style="margin-bottom: 0;">Tu asistente del Reglamento Universitario</p>
+                <p style="margin-bottom: 0;">Tu asistente universitario</p>
             </div>
             """,
             unsafe_allow_html=True
@@ -155,44 +155,38 @@ else:
             """
             <div style="text-align: center; padding: 10px; margin-bottom: 15px;">
                 <h2>ArdyBot 🐿️</h2>
-                <p style="margin-bottom: 0;">Tu asistente del Reglamento Universitario</p>
+                <p style="margin-bottom: 0;">Tu asistente universitario</p>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-# Sidebar con estadísticas
-with st.sidebar:
-    st.header("Estadísticas")
-    if st.session_state.response_times:
-        avg_time = sum(st.session_state.response_times) / len(st.session_state.response_times)
-        last_time = st.session_state.response_times[-1]
-        
-        st.markdown(f"<div class='metric-box'>Última respuesta: {last_time:.2f}s</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='metric-box'>Tiempo promedio: {avg_time:.2f}s</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='metric-box'>Total de preguntas: {len(st.session_state.history)}</div>", unsafe_allow_html=True)
-    
-    # Mostrar historial reciente
-    if st.session_state.history:
-        st.header("Preguntas recientes")
-        for i, (q, _) in enumerate(st.session_state.history[-5:]):
-            st.markdown(f"**{i+1}.** {q[:40]}..." if len(q) > 40 else f"**{i+1}.** {q}")
-    
-    # Botón para limpiar historial
-    if st.session_state.history and st.button("Limpiar historial"):
-        st.session_state.history = []
-        st.session_state.response_times = []
-        st.session_state.first_question_asked = False
-        st.rerun()
-
 # 📘 Ingesta (opcional)
-pdf_path = os.path.join("data", "reglamento", "reglamento-universitario.pdf")
+reglamento_path = os.path.join("data", "reglamento", "reglamento-universitario.pdf")
+preguntas_path = os.path.join("data", "reglamento", "FAQArdyBot.pdf")
 col1, col2 = st.columns([3, 1])
 
 with col1:
-    # Información sobre el reglamento
-    if not os.path.exists(pdf_path):
-        st.error("Reglamento no encontrado")
+    # Información sobre los documentos disponibles
+    if not os.path.exists(reglamento_path) or not os.path.exists(preguntas_path):
+        missing_docs = []
+        if not os.path.exists(reglamento_path):
+            missing_docs.append("Reglamento Universitario")
+        if not os.path.exists(preguntas_path):
+            missing_docs.append("Preguntas Frecuentes")
+        st.error(f"Documentos no encontrados: {', '.join(missing_docs)}")
+    else:
+        with st.expander("ℹ️ Documentos de Conocimiento"):
+            st.info("""
+            **ArdyBot** utiliza los siguientes documentos para responder tus consultas:
+            
+            1. **Reglamento Universitario**: Contiene las normas y regulaciones oficiales de la Universidad.
+            2. **Preguntas Frecuentes**: Versión actualizada con respuestas a preguntas comunes de los estudiantes.
+            
+            ¡Ahora ArdyBot es más inteligente! Puede responder preguntas tanto sobre el reglamento como sobre información general de la universidad.
+            
+            Si deseas reingestar los documentos, utiliza el botón "Reingestar Documentos" en el sidebar.
+            """)
 
 # Mostrar error si existe
 if st.session_state.error:
@@ -230,7 +224,7 @@ with col1:
     st.text_input(
         label="Pregunta",
         key="query_input",
-        placeholder="Escribe tu pregunta sobre el reglamento universitario...",
+        placeholder="Escribe tu pregunta sobre la universidad o el reglamento...",
         on_change=handle_submit,
         label_visibility="collapsed"
     )
@@ -269,6 +263,44 @@ if st.session_state.waiting_for_answer and st.session_state.submitted_query:
             st.error(f"Ha ocurrido un error: {str(e)}")
             st.session_state.waiting_for_answer = False
             st.session_state.submitted_query = ""
+
+# Sidebar con estadísticas y opción para reingestar documentos
+with st.sidebar:
+    st.header("Estadísticas")
+    if st.session_state.response_times:
+        avg_time = sum(st.session_state.response_times) / len(st.session_state.response_times)
+        last_time = st.session_state.response_times[-1]
+        
+        st.markdown(f"<div class='metric-box'>Última respuesta: {last_time:.2f}s</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-box'>Tiempo promedio: {avg_time:.2f}s</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-box'>Total de preguntas: {len(st.session_state.history)}</div>", unsafe_allow_html=True)
+    
+    # Mostrar historial reciente
+    if st.session_state.history:
+        st.header("Preguntas recientes")
+        for i, (q, _) in enumerate(st.session_state.history[-5:]):
+            st.markdown(f"**{i+1}.** {q[:40]}..." if len(q) > 40 else f"**{i+1}.** {q}")
+    
+    st.header("Opciones")
+    # Botón para reingestar documentos
+    if st.button("🔄 Reingestar Documentos"):
+        with st.spinner("Reingestando documentos... Esto puede tomar un momento"):
+            try:
+                # Ingestar ambos documentos
+                result = ingest(None)  # Esto procesará todos los PDF en data/reglamento/
+                st.success(result)
+                # Limpiar caché de respuestas
+                st.session_state.history = []
+                st.session_state.response_times = []
+            except Exception as e:
+                st.error(f"Error durante la ingestión: {str(e)}")
+    
+    # Botón para limpiar historial
+    if st.session_state.history and st.button("🗑️ Limpiar historial"):
+        st.session_state.history = []
+        st.session_state.response_times = []
+        st.session_state.first_question_asked = False
+        st.rerun()
 
 # --- FOOTER ---
 st.markdown("---")
